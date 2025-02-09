@@ -27,20 +27,20 @@ jobs:
       - name: Generate Dockerfile
         run: |
           cat <<EOF > Dockerfile
-          # 使用 Python 基础镜像，你可以根据实际需求调整版本
-          FROM python:3.11
+          # 基础镜像
+          FROM python:3.9
           # 设置工作目录
           WORKDIR /app
-          # 复制项目代码到工作目录
+          # 复制项目文件到容器中
           COPY . .
           # 创建并激活虚拟环境，安装依赖项
           RUN python -m venv venv && \
-              /bin/bash -c "source venv/bin/activate && \
+              . venv/bin/activate && \
               cd django-repo/tests && \
               python -m pip install -e .. && \
-              python -m pip install -r requirements/py3.txt"
+              python -m pip install -r requirements/py3.txt
           # 运行测试脚本
-          CMD ["/bin/bash", "-c", "source venv/bin/activate && cd django-repo/tests && ./runtests.py"]
+          CMD ["/bin/bash", "-c", "venv/bin/python django-repo/tests/runtests.py"]
           EOF
       # 构建 Docker 镜像
       - name: Build Docker image
