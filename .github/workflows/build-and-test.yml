@@ -1,0 +1,46 @@
+name: Build Docker Image and Run Tests
+
+on:
+  # 手动触发工作流
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'owner/repo'
+        required: true
+      commit:
+        description: 'SHA'
+        required: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出目标仓库的特定提交
+      - name: Checkout target repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.inputs.repo }}
+          ref: ${{ github.event.inputs.commit }}
+
+      # 构建 Docker 镜像
+      - name: Build Docker image
+        run: docker build -t my-test-image .
+
+      # 运行 Docker 容器，创建虚拟环境，安装依赖并运行测试
+      - name: Install dependencies and run tests in Docker
+        run: |
+          docker run -it --name test-container my-test-image \
+            bash -c " \
+              # 创建虚拟环境
+              python -m venv venv && \
+              # 激活虚拟环境
+              source venv/bin/activate && \
+              # 进入 tests 目录
+              cd tests && \
+              # 安装依赖
+              python -m pip install -e .. && \
+              python -m pip install -r requirements/py3.txt && \
+              # 运行测试
+              ./runtests.py \
+            "
