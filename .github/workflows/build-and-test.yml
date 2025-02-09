@@ -34,17 +34,14 @@ jobs:
           WORKDIR /app
 
           # 安装系统依赖
-          RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+          RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/*
 
-          # 复制项目的依赖文件
-          COPY tests/requirements/py3.txt /app/
-
-          # 安装项目的依赖
-          RUN pip install --no-cache-dir -r py3.txt
+          # 下载并安装项目的依赖
+          RUN curl -O https://raw.githubusercontent.com/django/django/main/tests/requirements/py3.txt \
+              && pip install --no-cache-dir -r py3.txt
 
           # 下载项目文件到工作目录
           RUN curl -L https://github.com/django/django/archive/main.zip -o django-main.zip \
-              && apt-get install -y unzip \
               && unzip django-main.zip -d /app \
               && mv /app/django-main/* /app/ \
               && rm -rf django-main django-main.zip
