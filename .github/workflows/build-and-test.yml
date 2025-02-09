@@ -36,11 +36,11 @@ jobs:
           # 创建并激活虚拟环境，安装依赖项
           RUN python -m venv venv && \
               . venv/bin/activate && \
-              cd django-repo/tests && \
+              cd django/tests && \
               python -m pip install -e .. && \
               python -m pip install -r requirements/py3.txt
           # 运行测试脚本
-          CMD ["/bin/bash", "-c", "venv/bin/python django-repo/tests/runtests.py"]
+          CMD ["/bin/bash", "-c", "venv/bin/python django/tests/runtests.py"]
           EOF
       # 构建 Docker 镜像
       - name: Build Docker image
